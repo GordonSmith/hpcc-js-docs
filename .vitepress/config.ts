@@ -1,0 +1,52 @@
+import { defineConfig } from "vitepress";
+import { eclLang } from "./shiki-ecl.ts";
+import { MarkdownEx } from "./markdown.ts";
+
+// https://vitepress.dev/reference/site-config
+export default async () => {
+
+    return defineConfig({
+        title: "@hpcc-js/docs",
+        description: "A VitePress Site",
+        base: "/hpcc-js-docs/",
+        themeConfig: {
+            // https://vitepress.dev/reference/default-theme-config
+            nav: [
+                { text: "Home", link: "/" },
+                { text: "Examples", link: "/examples/markdown-examples" }
+            ],
+
+            sidebar: [
+                {
+                    text: "Examples",
+                    items: [
+                        { text: "Hello World", link: "examples/hello-world" },
+                        {
+                            text: "plot",
+                            items: [
+                                { text: "Diverging color scatterplot", link: "examples/plot/Diverging color scatterplot" },
+                                { text: "US bubble map", link: "examples/plot/US bubble map" },
+                            ]
+                        }
+                    ]
+                }
+            ],
+
+            socialLinks: [
+                { icon: "github", link: "https://github.com/GordonSmith/hpcc-js-docs" }
+            ],
+
+        },
+        markdown: {
+            // https://github.com/vuejs/vitepress/blob/main/src/node/markdown/markdown.ts
+            config: md => {
+                new MarkdownEx(md);
+            },
+
+            languages: [eclLang()],
+        },
+
+        vite: {
+        },
+    });
+};
