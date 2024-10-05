@@ -32,23 +32,25 @@ Plot.plot({
 
 This dataset comes from the U.S. Census API and contains three columns: the estimated population (as a string), the two-digit state FIPS code, and the three-digit county FIPS code.
 
-```js echo display=false
-population = FileAttachment(/* "population.json" */"https://static.observableusercontent.com/files/b6be3f760074b3977c8095ed7fd0cd29d06860ec6b45ea56600e2ea5f03e8b1205c4705712c7866c6818109875824c9ad6b96bb3a40e4a6b43806432c40686bd").json()
-  .then((data) =>
-    data
-      .slice(1) // removes a header line
+<script setup>
+import { data } from "./US bubble map.data.ts";
+globalThis.__rawData = data;
+</script>
+
+```js display=false
+population = globalThis.__rawData[0]
+      .slice(1)
       .map(([p, state, county]) => ({
         state,
         county,
         population: +p
-      }))
-  )
+      }));
 ```
 
 The geometries used in this example are from the [TopoJSON U.S. Atlas](https://github.com/topojson/us-atlas), which are derived from the U.S. Census Bureau shapefiles. (There’s also the [TopoJSON World Atlas](https://github.com/topojson/world-atlas), which is derived from [Natural Earth](https://www.naturalearthdata.com).) The *counties* feature collection is all U.S. counties, using the five-digit FIPS identifier. The *statemap* lets us lookup the name of the state that contains a given county; a state’s two-digit identifier corresponds to the first two digits of its counties’ identifiers. Similarly, the *countymap* lets us lookup the name and geometry of each county.
 
 ```js echo display=false
-us = FileAttachment(/* "counties-albers-10m.json" */"https://static.observableusercontent.com/files/1ec3edc43ba66c0db419744c479d1b5118bb405587189f3ad739a10853f6f933d86824e809f4b4ad18053ab33fb5dc7c5f3d6bc601654c8ea976afd5b321f517").json()
+us = globalThis.__rawData[1]
 
 nation = topojson.feature(us, us.objects.nation)
 

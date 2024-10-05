@@ -21,7 +21,11 @@ Plot.plot({
 
 ```
 
-```js display=false
-gistemp = FileAttachment(/* "gistemp.csv" */"https://static.observableusercontent.com/files/1734c862dd51ef67930fef3dcd19e8184bb65c405683f55a085f97ca01c233713a53062c251fe0a6d72f93863fd5f714eadef3c9455b1b4f2ed90546cbc57b32").csv({typed: true});
-```
+<script setup>
+import { data } from "./Diverging color scatterplot.data.ts";
+globalThis.__rawData = data;
+</script>
 
+```js display=false
+gistemp = globalThis.__rawData[0].map((row) => ({ Date: new Date(row.Date), Anomaly: +row.Anomaly }));
+```

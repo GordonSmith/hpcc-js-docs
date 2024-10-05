@@ -24,6 +24,7 @@
     "devDependencies": {
         "@eslint/js": "8.57.1",
         "@observablehq/runtime": "^5.9.9",
+        "@observablehq/stdlib": "^5.8.8",
         "@shikijs/markdown-it": "^1.21.0",
         "@types/react": "18.3.11",
         "@types/react-dom": "18.3.0",
