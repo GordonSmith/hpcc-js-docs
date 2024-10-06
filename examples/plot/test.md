@@ -6,14 +6,14 @@ _Testing the rendering of observablehq notebooks in markdown._
 
 <!-- a ${ Plot.rectY({length: 10000}, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot() } b -->
 
+aaa
+
 a ${ mol } b
 
 <div class="card grid-colspan-2">
   <h4>R2D2</h4>
   a ${ mol } b
 </div>
-
-aaa
 
 ```js
 mol = `aaa`;
