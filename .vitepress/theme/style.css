@@ -46,14 +46,15 @@
 
 
 :root {
-    --vp-c-brand-0: red;
     --vp-c-brand-1: #08557F;
     --vp-c-brand-2: #347FAA;
     --vp-c-brand-3: #61AAD4;
+    --vp-c-brand-4: #8DD4FF;
 }
 
 :root.dark {
-    /* --vp-c-default-1: var(--vp-c-gray-1);
+    /* 
+    --vp-c-default-1: var(--vp-c-gray-1);
     --vp-c-default-2: var(--vp-c-gray-2);
     --vp-c-default-3: var(--vp-c-gray-3);
     --vp-c-default-soft: var(--vp-c-gray-soft); */

@@ -2,7 +2,7 @@
 
 Estimated population by county, 2016. See also the spike map as an alternative presentation of this data. Data: [American Community Survey](https://api.census.gov/data/2016/acs/acs5/cprofile/examples.html)
 
-```js echo
+```js exec
 Plot.plot({
   width: 975,
   projection: "identity",
@@ -37,7 +37,7 @@ import { data } from "./US bubble map.data.ts";
 globalThis.__rawData = data;
 </script>
 
-```js display=false
+```js exec echo hide
 population = globalThis.__rawData[0]
       .slice(1)
       .map(([p, state, county]) => ({
@@ -49,7 +49,7 @@ population = globalThis.__rawData[0]
 
 The geometries used in this example are from the [TopoJSON U.S. Atlas](https://github.com/topojson/us-atlas), which are derived from the U.S. Census Bureau shapefiles. (There’s also the [TopoJSON World Atlas](https://github.com/topojson/world-atlas), which is derived from [Natural Earth](https://www.naturalearthdata.com).) The *counties* feature collection is all U.S. counties, using the five-digit FIPS identifier. The *statemap* lets us lookup the name of the state that contains a given county; a state’s two-digit identifier corresponds to the first two digits of its counties’ identifiers. Similarly, the *countymap* lets us lookup the name and geometry of each county.
 
-```js echo display=false
+```js exec echo hide 
 us = globalThis.__rawData[1]
 
 nation = topojson.feature(us, us.objects.nation)
@@ -59,13 +59,13 @@ statemap = new Map(topojson.feature(us, us.objects.states).features.map(d => [d.
 countymap = new Map(topojson.feature(us, us.objects.counties).features.map(d => [d.id, d]))
 ```
 The *statemesh* is just the internal borders between states, *i.e.*, everything but the coastlines and country borders. This avoids an additional stroke on the perimeter of the map, which would otherwise mask intricate features such as islands and inlets. (Try removing the last argument to topojson.mesh below to see the effect.)
-```js echo display=false
+```js exec echo hide 
 statemesh = topojson.mesh(us, us.objects.states, (a, b) => a !== b)
 ```
 
 Plot does not yet have an official radius legend (please vote up [#236](https://github.com/observablehq/plot/issues/236)!). In the meantime, here is a helper:
 
-```js echo display=false
+```js exec echo hide 
 radiusLegend = (data, options) =>
   Plot.dot(data, {
     ...options,

@@ -2,7 +2,7 @@
 
 This plot of global average surface temperature ([GISTEMP](https://data.giss.nasa.gov/gistemp/)) uses a *diverging* *color* scale to indicate the deviation from the 1951–1980 average in degrees Celsius. Each measurement is drawn with a [dot](https://observablehq.com/plot/marks/dot), and a ramp [legend](https://observablehq.com/plot/features/legend) allows the reader to interpret the color—which in this case is redundant with its *y* position.
 
-```js
+```js exec
 Plot.plot({
   y: {
     grid: true,
@@ -18,7 +18,6 @@ Plot.plot({
     Plot.dot(gistemp, {x: "Date", y: "Anomaly", stroke: "Anomaly"})
   ]
 })
-
 ```
 
 <script setup>
@@ -26,6 +25,6 @@ import { data } from "./Diverging color scatterplot.data.ts";
 globalThis.__rawData = data;
 </script>
 
-```js display=false
+```js exec hide
 gistemp = globalThis.__rawData[0].map((row) => ({ Date: new Date(row.Date), Anomaly: +row.Anomaly }));
 ```

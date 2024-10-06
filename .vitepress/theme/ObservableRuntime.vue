@@ -7,25 +7,17 @@
 import { observableRuntime } from"../markdown.ts";
 
 export default {
-    name: 'NotebookComponent',
+    name: 'ObservableRuntime',
     props: {
         content: {
             type: String,
             required: true
         },
     },
-    data() {
-        return {
-            loading: true
-        };
-    },
     async created() {
-        setTimeout(() => {
-            this.loading = false;
-            observableRuntime(JSON.parse(decodeURI(this.content)));
-        }, 0);
+        await observableRuntime(JSON.parse(decodeURI(this.content)));
     }
-}
+};
 </script>
 
 <style scoped>
