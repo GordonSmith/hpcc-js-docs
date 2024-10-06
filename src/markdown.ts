@@ -6,7 +6,7 @@ import dark from "shiki/themes/github-dark.mjs";
 import light from "shiki/themes/vitesse-light.mjs";
 import { ojs2notebook } from "@hpcc-js/observablehq-compiler";
 
-import { eclLang } from "./shiki-ecl";
+import { eclLang } from "../.vitepress/shiki-ecl.ts";
 
 let _lightMD: MarkdownIt | undefined;
 export async function lightMD() {

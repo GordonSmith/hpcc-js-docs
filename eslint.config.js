@@ -30,11 +30,11 @@ export default tseslint.config(
                 "error",
                 {
                     "args": "all",
-                    "argsIgnorePattern": "^_",
+                    "argsIgnorePattern": "_",
                     "caughtErrors": "all",
-                    "caughtErrorsIgnorePattern": "^_",
-                    "destructuredArrayIgnorePattern": "^_",
-                    "varsIgnorePattern": "^_",
+                    "caughtErrorsIgnorePattern": "_",
+                    "destructuredArrayIgnorePattern": "_",
+                    "varsIgnorePattern": "_",
                     "ignoreRestSiblings": true
                 }
             ],

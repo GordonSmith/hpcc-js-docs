@@ -1,2 +1,2 @@
-export * from "./shiki-ecl.ts";
+export * from "../.vitepress/shiki-ecl.ts";
 

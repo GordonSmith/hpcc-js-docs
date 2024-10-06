@@ -1,11 +1,6 @@
-<script setup>
-import { data } from "./US bubble map.data.ts";
-globalThis.__hpcc__data = data;
-</script>
 
-<!-- <pre>{{ data }}</pre> -->
+a ${ mol } b
 
-```js
-globalThis.__hpcc__data;
-// population2 = {{ data }}
+```js echo
+mol = 42 + 1;
 ```

@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/index.ts","./src/main.tsx","./src/markdown.ts","./src/shiki-ecl.ts","./src/vite-env.d.ts"],"version":"5.6.2"}
+{"root":["./.vitepress/config.ts","./src/app.tsx","./src/index.ts","./src/main.tsx","./src/markdown.ts","./src/vite-env.d.ts","./src/writer.ts","./.vitepress/theme/useglobalstate.ts","./.vitepress/shiki-ecl.ts"],"errors":true,"version":"5.6.2"}

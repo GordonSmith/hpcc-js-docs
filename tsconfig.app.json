@@ -23,8 +23,10 @@
         "noFallthroughCasesInSwitch": true,
     },
     "include": [
-        ".vitepress/condig.ts",
+        ".vitepress/config.ts",
+        ".vitepress/config.ts",
         "src",
-        ".vitepress/theme/useGlobalState.ts"
+        ".vitepress/theme/useGlobalState.ts",
+        ".vitepress/shiki-ecl.ts"
     ]
 }
