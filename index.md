@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "@hpcc-js/docs"
-  text: "A VitePress Site"
-  tagline: My great project tagline
+  text: ""
+  tagline: "Documentation for hpcc-js"
   image:
     dark: /assets/HPCC_Logo_TM_REVERSE.svg
     light: /assets/HPCC_Logo_TM.svg

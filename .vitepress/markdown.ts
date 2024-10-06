@@ -1,14 +1,10 @@
 import type MarkdownIt from "markdown-it";
-import type { Options } from "markdown-it";
+import type { Options, } from "markdown-it";
 import type Token from "markdown-it/lib/token.mjs";
 import type Renderer from "markdown-it/lib/renderer.mjs";
 import type StateBlock from "markdown-it/lib/rules_block/state_block.mjs";
 import type StateInline from "markdown-it/lib/rules_inline/state_inline.mjs";
 
-
-// import Token from "markdown-it/lib/token.mjs";
-// import Renderer from "markdown-it/lib/renderer.mjs";
-// import StateCore from "markdown-it/lib/rules_core/state_core.mjs";
 import { ojs2notebook } from "@hpcc-js/observablehq-compiler";
 
 const proxy = (tokens: Token[], idx: number, options: Options, _env: unknown, self: Renderer) => self.renderToken(tokens, idx, options);
@@ -26,7 +22,7 @@ export class MarkdownEx {
         this.md = md;
         this.hookStartEnd(md);
         this.hookFence(md);
-        // this.hookTemplateLiterls(md);
+        this.hookTemplateLiterls(md);
     }
 
     protected parseInfo(info: string): { langName: string, attrs: InfoAttrs } {
@@ -84,17 +80,7 @@ export class MarkdownEx {
                 case "js":
                 case "javascript":
                     if (info.attrs.run !== false) {
-                        try {
-                            const cellNb = ojs2notebook(token.content);
-                            for (let i = 0; i < cellNb.nodes.length; ++i) {
-                                const id = `fence-${idx}-${i}`;
-                                preHtml += `<NodeComponent id="${id}" content="${encodeURI(cellNb.nodes[i].value)}" display=${info.attrs.display !== false ? "true" : "false"} />`;
-                            }
-                        } catch (e: any) {
-                            console.error(e.message ?? e);
-                            preHtml = `<div>Error: ${e.message}</div>`;
-                            info.attrs.run = false;
-                        }
+                        preHtml = this.appendNodeComponent(token.content, info.attrs.display !== false, info.attrs);
                     }
                     if (info.attrs.echo || info.attrs.run === false) {
                         return preHtml + defaultFenceRenderer(tokens, idx, options, env, self);
@@ -123,17 +109,33 @@ export class MarkdownEx {
 
     hookTemplateLiterls(md: MarkdownIt) {
         md.renderer.rules.variable = (tokens: Token[], idx: number, options: any, env: any, self: Renderer) => this.renderVariable(tokens, idx, options, env, self);
-        md.inline.ruler.after("image", "variables_ref", (state: StateInline, silent: boolean) => this.parseVariableRef(state, silent));
+        // md.block.ruler.before("reference", "variables_def", (state: StateBlock, startLine: number, _endLine: number, silent: boolean) => this.parseVariableRefBlock(state, startLine, _endLine, silent), { alt: ["paragraph", "reference"] });
+        md.inline.ruler.before("text", "variables_ref", (state: StateInline, silent: boolean) => this.parseVariableRefInline(state, silent));
+        // md.text.ruler.after("image", "variables_ref", (state: StateInline, silent: boolean) => this.parseVariableRefInline(state, silent));
     }
 
     // Based on https://github.com/Bioruebe/markdown-it-variable
-    parseVariableRef(state: StateInline, silent: boolean) {
-        const start = state.pos;
-        const max = state.posMax;
+    renderVariable(tokens: Token[], idx: number, _options: Options, _env: unknown, _self: Renderer) {
+        console.log("renderVariable");
+        const token = tokens[idx];
+        return this.appendNodeComponent(token.content, true, {});
+    }
+    parseVariableRefBlock(state: StateBlock, startLine: number, _endLine: number, silent: boolean) {
+        const start = state.bMarks[startLine] + state.tShift[startLine];
+        const max = state.eMarks[startLine];
+        return this.parseVariableRef(state, { pos: start, posMax: max }, silent);
+    }
 
+    parseVariableRefInline(state: StateInline, silent: boolean) {
+        return this.parseVariableRef(state, state, silent);
+    }
+
+    parseVariableRef(state: StateInline | StateBlock, stateEx: { pos: number, posMax: number }, silent: boolean) {
+
+        const start = stateEx.pos;
+        const max = stateEx.posMax;
         // ${ var }
         // ^^ Require opening markers
-        // if (!state.env.variables) return false;
         if (state.src.charCodeAt(start) !== DOLLAR) return false;
         if (state.src.charCodeAt(start + 1) !== CURLEY_OPEN) return false;
         let pos = start + 2;
@@ -181,17 +183,12 @@ export class MarkdownEx {
             // token.children = state.env.variables[variableName].tokens;
         }
 
-        state.pos = pos + 1;
+        stateEx.pos = pos + 1;
         return true;
-    }
-
-    renderVariable(tokens: Token[], idx: number, options: any, env: any, self: Renderer) {
-        console.log("renderVariable");
-        return self.renderInline(tokens[idx].children || [], options, env);
     }
 }
 
-function skipWhitespace(state: StateBlock | StateInline, pos: number, max: number) {
+function skipWhitespace(state: StateInline | StateBlock, pos: number, max: number) {
     for (; pos < max; pos++) {
         const code = state.src.charCodeAt(pos);
         if (!state.md.utils.isSpace(code)) break;
