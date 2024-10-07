@@ -6,7 +6,7 @@ This page demonstrates some of the built-in markdown extensions provided by Vite
 
 VitePress provides Syntax Highlighting powered by [Shiki](https://github.com/shikijs/shiki), with additional features like line-highlighting:
 
-```js run=true
+```js
 Plot.rectY({length: 10000}, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
 ```
 

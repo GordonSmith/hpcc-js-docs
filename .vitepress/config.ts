@@ -1,6 +1,6 @@
-import { defineConfig, SiteConfig, PageData, TransformPageContext } from "vitepress";
+import { defineConfig } from "vitepress";
 import { eclLang } from "./shiki-ecl.ts";
-import { MarkdownEx } from "./markdown.ts";
+import observablePlugin from "./markdown.ts";
 
 // https://vitepress.dev/reference/site-config
 export default async () => {
@@ -42,25 +42,14 @@ export default async () => {
         markdown: {
             // https://github.com/vuejs/vitepress/blob/main/src/node/markdown/markdown.ts
             config: md => {
-                new MarkdownEx(md);
+                observablePlugin(md, { vitePress: true });
             },
 
             languages: [eclLang()],
         },
 
         vite: {
-        },
-
-        buildEnd: async (_siteConfig: SiteConfig) => {
-            console.log("buildEnd");
-        },
-
-        async postRender(_context) {
-            console.log("postRender");
-        },
-
-        async transformPageData(_pageData: PageData, _context: TransformPageContext) {
-            console.log("transformPageData");
         }
+
     });
 };
