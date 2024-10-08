@@ -17,17 +17,15 @@
         "update-major": "npx -y npm-check-updates -u"
     },
     "dependencies": {
-        "@hpcc-js/observablehq-compiler": "^1.3.0",
-        "@observablehq/runtime": "^5.9.9",
+        "@hpcc-js/observablehq-compiler": "1.3.0",
+        "@observablehq/runtime": "5.9.9",
         "d3-fetch": "3.0.1"
     },
     "devDependencies": {
         "@eslint/js": "8.57.1",
-        "@shikijs/markdown-it": "1.22.0",
+        "@shikijs/markdown-it": "1.21.0",
         "eslint": "8.57.1",
         "eslint-gitignore": "0.1.0",
-        "globals": "15.10.0",
-        "markdown-it": "14.1.0",
         "rimraf": "6.0.1",
         "typescript": "5.6.2",
         "typescript-eslint": "8.8.0",

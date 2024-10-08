@@ -18,7 +18,6 @@ Plot.plot({
     Plot.dot(gistemp, {x: "Date", y: "Anomaly", stroke: "Anomaly"})
   ]
 })
-
 ```
 
 <script setup>
@@ -26,6 +25,6 @@ import { data } from "./Diverging color scatterplot.data.ts";
 globalThis.__rawData = data;
 </script>
 
-```js display=false
+```js hide
 gistemp = globalThis.__rawData[0].map((row) => ({ Date: new Date(row.Date), Anomaly: +row.Anomaly }));
 ```

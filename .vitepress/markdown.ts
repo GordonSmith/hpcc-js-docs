@@ -10,10 +10,32 @@ import { Runtime, Library, Inspector } from "@observablehq/runtime";
 import { ojs2notebook, compile, type ohq } from "@hpcc-js/observablehq-compiler";
 
 interface FenceInfo {
-    type?: "js" | "javascript" | string;
-    eval?: boolean;
+    type: "js" | "javascript" | string;
+    exec?: boolean;
     echo?: boolean;
-    hidden?: boolean;
+    hide?: boolean;
+}
+
+const fenceInfoDefaults: FenceInfo = {
+    type: "js",
+    exec: false,
+    echo: undefined,
+    hide: undefined
+};
+
+function showSrc(fetchInfo: FenceInfo): boolean {
+    if (fetchInfo.exec === true) {
+        return fetchInfo.echo === true;
+    }
+    return fetchInfo.echo !== false;
+}
+
+function executeSrc(fenceInfo: FenceInfo): boolean {
+    return fenceInfo.exec === true;
+}
+
+function renderExecutedSrc(fetchInfo: FenceInfo): boolean {
+    return fetchInfo.exec == true && fetchInfo.hide !== true;
 }
 
 interface ObservableNode extends FenceInfo {
@@ -32,7 +54,7 @@ export async function observableRuntime(nodes: ObservableNode[]) {
             mode: "js",
             value: node.content
         });
-        displayIndex[node.id] = node.hidden !== true;
+        displayIndex[node.id] = renderExecutedSrc(node);
     }
     const define = await compile(nb);
     const runtime = new Runtime(new Library());
@@ -68,10 +90,13 @@ function hookRender(md: MarkdownIt) {
 function hookVitepressRender(md: MarkdownIt) {
 
     const originalRender = md.render;
-    md.render = (src: string, _env?: any): string => {
-        const env = { ..._env };
-        let retVal = originalRender.call(md, src, env);
-        retVal += `<ObservableRuntime content="${encodeURI(JSON.stringify(env[ENV_KEY] ?? []))}" />`;
+    md.render = (src: string, env?: any): string => {
+        const myEnv = env ?? {};
+        let retVal = originalRender.call(md, src, myEnv);
+        if (env[ENV_KEY]?.length) {
+            const content = encodeURI(JSON.stringify(env[ENV_KEY]));
+            retVal += `<NotebookComponent content="${content}" />`;
+        }
         return retVal;
     };
 }
@@ -94,14 +119,14 @@ const deserializeFenceInfo = (attrs: string): FenceInfo =>
 
             const [key, value] = pair.split("=") as [keyof FenceInfo, string];
             switch (key) {
-                case "eval":
+                case "exec":
                 case "echo":
-                case "hidden":
+                case "hide":
                     acc[key] = value !== "false";
                     break;
             }
             return acc;
-        }, { eval: true, echo: false, hidden: false })
+        }, { ...fenceInfoDefaults })
     ;
 
 let idx = 0;
@@ -111,7 +136,7 @@ function calcPlaceholders(content: string, fenceInfo: FenceInfo): ObservableNode
     try {
         const cellNb = ojs2notebook(content);
         for (let i = 0; i < cellNb.nodes.length; ++i) {
-            const id = `fence - ${idx} -${i + 1} `;
+            const id = `fence-${idx}-${i + 1}`;
             const content = cellNb.nodes[i].value;
             retVal.push({
                 ...fenceInfo,
@@ -119,7 +144,7 @@ function calcPlaceholders(content: string, fenceInfo: FenceInfo): ObservableNode
                 content,
                 innerHTML: `\
         <span id="${id}" >
-            ${content}
+            ${renderExecutedSrc(fenceInfo) ? content : ""}
         </span>`
             });
         }
@@ -161,16 +186,22 @@ function hookFence(md: MarkdownIt) {
             fenceInfo.type = "js";
         }
         token.content += "\n";
+        // let preHtml = JSON.stringify({
+        //     showSrc: showSrc(fenceInfo),
+        //     executeSrc: executeSrc(fenceInfo),
+        //     renderExecutedSrc: renderExecutedSrc(fenceInfo),
+        //     fenceInfo
+        // }) + "<br>";
         let preHtml = "";
         switch (fenceInfo.type) {
             case "js":
-                if (fenceInfo.eval) {
+                if (executeSrc(fenceInfo)) {
                     if (!env[ENV_KEY]) {
                         env[ENV_KEY] = [];
                     }
                     preHtml += generatePlaceholders(token.content, fenceInfo, env);
                 }
-                if (fenceInfo.echo || fenceInfo.eval === false) {
+                if (showSrc(fenceInfo)) {
                     return preHtml + defaultFenceRenderer(tokens, idx, options, env, self);
                 }
                 break;
@@ -185,7 +216,7 @@ function hookFence(md: MarkdownIt) {
 //  -----------------------------------------------------------------
 
 function renderObservable(tokens: Token[], idx: number, _options: Options, env: any, _self: Renderer) {
-    return generatePlaceholders(tokens[idx].content, { type: "js", hidden: false }, env);
+    return generatePlaceholders(tokens[idx].content, { type: "js", exec: true }, env);
 }
 
 const DOLLAR = 0x24;
@@ -219,7 +250,7 @@ function parseObservableRef(state: StateInline | StateBlock, stateEx: { pos: num
                 }
                 break;
         }
-        pos++
+        pos++;
     }
     const observableEnd = pos;
     if (pos >= max || observableStart == observableEnd) return false;
@@ -272,6 +303,7 @@ export interface ObservablePluginOptions {
 // }
 
 export default function observablePlugin(md: MarkdownIt, opts: ObservablePluginOptions = {}) {
+    console.log("observablePlugin", opts);
     hookTemplateLiterals(md);
     hookFence(md);
     if (opts.vitePress) {

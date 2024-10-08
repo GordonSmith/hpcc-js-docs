@@ -1,9 +1,9 @@
 // https://vitepress.dev/guide/custom-theme
-
 import { h } from "vue";
 import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
-import ObservableRuntime from "./ObservableRuntime.vue";
+import NodeComponent from "./NodeComponent.vue";
+import NotebookComponent from "./NotebookComponent.vue";
 import "./style.css";
 
 export default {
@@ -11,11 +11,11 @@ export default {
     Layout: () => {
         return h(DefaultTheme.Layout, null, {
             // https://vitepress.dev/guide/extending-default-theme#layout-slots
-
         });
     },
     enhanceApp({ app }) {
-        app.component("ObservableRuntime", ObservableRuntime);
+        app.component("NodeComponent", NodeComponent);
+        app.component("NotebookComponent", NotebookComponent);
     },
 
 } satisfies Theme;

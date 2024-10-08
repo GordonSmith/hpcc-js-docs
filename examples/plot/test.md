@@ -2,19 +2,96 @@
 
 _Testing the rendering of observablehq notebooks in markdown._
 
-## Test inline
+## Options
 
-1. js eval=false
+### Regular js code block
 
-```js eval=false
-const a = ${mol};
+````md
+```js
+const mol = 40 + 2;
 ```
+````
 
-2. js
+Produces:
 
 ```js
+const mol1 = 40 + 2;
+```
+
+### Executed code block
+
+````md
+```js exec
 mol = 40 + 2;
 ```
+````
+
+Produces:
+```js exec
+mol = 40 + 2;
+```
+
+### Executed code block with `echo`
+
+````md
+```js exec echo
+molSrcEcho = 40 + 2;
+```
+````
+
+Produces:
+```js exec echo
+molSrcEcho = 40 + 2;
+```
+
+### Executed code block with `hide`
+
+````md
+```js exec hide
+molSrcHide = 40 + 2;
+```
+````
+
+Produces:
+```js exec hide
+molSrcHide = 40 + 2;
+```
+
+::: warning
+Both the code block and executed output is hidden but the result is still calculated.
+:::
+
+### Executed code block with `echo` and `hide`
+
+````md
+```js exec echo hide
+molSrcEchoHide = 40 + 2;
+```
+````
+
+Produces:
+```js exec echo hide
+molSrcEchoHide = 40 + 2;
+```
+
+---
+
+---
+
+<!-- ### Hidden code block
+
+````md
+```js hide
+mol = 40 + 2;
+```
+````
+
+Produces:
+
+```js hide
+mol = 40 + 2;
+```
+...nothing...
 
 3. js echo
 
@@ -56,4 +133,4 @@ a ${ mol } b
             a ${ Plot.rectY({length: 10000}, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot() } b
         </div>
     </div>
-</div>
+</div> -->

@@ -42,7 +42,7 @@ export default async () => {
         markdown: {
             // https://github.com/vuejs/vitepress/blob/main/src/node/markdown/markdown.ts
             config: md => {
-                observablePlugin(md, { vitePress: true });
+                md.use(observablePlugin, { vitePress: true });
             },
 
             languages: [eclLang()],
