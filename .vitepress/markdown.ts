@@ -89,6 +89,7 @@ function hookRender(md: MarkdownIt) {
 
 function hookVitepressRender(md: MarkdownIt) {
 
+    console.log(Object.keys(md.renderer.rules));
     const originalRender = md.render;
     md.render = (src: string, env?: any): string => {
         const myEnv = env ?? {};
@@ -97,6 +98,7 @@ function hookVitepressRender(md: MarkdownIt) {
             const content = encodeURI(JSON.stringify(env[ENV_KEY]));
             retVal += `<NotebookComponent content="${content}" />`;
         }
+        // console.log(Object.keys(md.renderer.rules));
         return retVal;
     };
 }
@@ -272,20 +274,30 @@ function parseObservableRef(state: StateInline | StateBlock, stateEx: { pos: num
     return true;
 }
 
-// function parseObservableRefBlock(state: StateBlock, startLine: number, _endLine: number, silent: boolean) {
-//     const start = state.bMarks[startLine] + state.tShift[startLine];
-//     const max = state.eMarks[startLine];
-//     return parseObservableRef(state, { pos: start, posMax: max }, silent);
-// }
+function parseObservableRefBlock(state: StateBlock, startLine: number, _endLine: number, silent: boolean) {
+    const start = state.bMarks[startLine] + state.tShift[startLine];
+    const max = state.eMarks[startLine];
+    const pos = state.src.indexOf("${", start);
+    if (pos < 0 || pos >= max) return false;
+    console.log("bstate", state.src.substring(pos, max - pos));
+    const retVal = parseObservableRef(state, { pos, posMax: max }, silent);
+    if (retVal) {
+        state.line = startLine + 1;
+    }
+    return retVal;
+}
 
 function parseObservableRefInline(state: StateInline, silent: boolean) {
+    // console.log("lstate", state.src.substring(state.pos, state.posMax - state.pos));
     return parseObservableRef(state, state, silent);
 }
 
 function hookTemplateLiterals(md: MarkdownIt) {
     md.renderer.rules.observable = (tokens: Token[], idx: number, options: any, env: any, self: Renderer) => renderObservable(tokens, idx, options, env, self);
-    // md.block.ruler.before("reference", "variables_def", (state: StateBlock, startLine: number, _endLine: number, silent: boolean) => parseObservableRefBlock(state, startLine, _endLine, silent), { alt: ["paragraph", "reference"] });
+    // md.block.ruler.before("html_block", "observable_ref", (state: StateBlock, startLine: number, _endLine: number, silent: boolean) => parseObservableRefBlock(state, startLine, _endLine, silent));
     md.inline.ruler.before("text", "observable_ref", (state: StateInline, silent: boolean) => parseObservableRefInline(state, silent));
+    // md.inline.ruler.before("html_inline", "observable_ref", (state: StateInline, silent: boolean) => parseObservableRefInline(state, silent));
+    // md.inline.ruler.before("html_block", "observable_ref", (state: StateInline, silent: boolean) => parseObservableRefInline(state, silent));
     // md.text.ruler.after("image", "variables_ref", (state: StateInline, silent: boolean) => parseObservableRefInline(state, silent));
 }
 
